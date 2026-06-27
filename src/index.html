@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MPhotoPicker</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <!-- ===== CỘT TRÁI: CẤU HÌNH ===== -->
+      <section class="card config">
+        <header class="card-head">
+          <h1>Tool lọc ảnh theo tên file</h1>
+          <p class="subtitle">
+            Tìm ảnh theo danh sách tên rồi chép sang thư mục mới — luôn giữ nguyên
+            file gốc.
+          </p>
+        </header>
+
+        <div class="folders">
+          <button class="folder" id="pick-source" type="button" data-kind="source">
+            <span class="folder-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h3.5l2 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            </span>
+            <span class="folder-text">
+              <span class="folder-tag">NGUỒN</span>
+              <span class="folder-label">Chọn thư mục gốc</span>
+              <span class="folder-path" id="source-path">Bấm để chọn hoặc kéo-thả</span>
+            </span>
+          </button>
+
+          <button class="folder" id="pick-dest" type="button" data-kind="dest">
+            <span class="folder-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h3.5l2 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10v4.5m0 0-1.6-1.6M12 14.5l1.6-1.6"/></svg>
+            </span>
+            <span class="folder-text">
+              <span class="folder-tag">ĐÍCH</span>
+              <span class="folder-label">Chọn thư mục lưu sau khi lọc</span>
+              <span class="folder-path" id="dest-path">Bấm để chọn hoặc kéo-thả</span>
+            </span>
+          </button>
+        </div>
+
+        <div class="field grow">
+          <label class="field-label" for="names">Danh sách ảnh cần lọc</label>
+          <textarea
+            id="names"
+            spellcheck="false"
+            placeholder="DSC_0001&#10;DSC_0002.jpg&#10;IMG_2451"
+          ></textarea>
+        </div>
+
+        <div class="controls">
+          <div class="field ext-wrap">
+            <label class="field-label" for="ext-mode">Đuôi ảnh</label>
+            <select id="ext-mode">
+              <option value="all" selected>Tất cả</option>
+              <option value="jpg">Chỉ JPG</option>
+              <option value="raw">Chỉ RAW</option>
+              <option value="raw_jpg">RAW + JPG</option>
+              <option value="custom">Tùy chỉnh…</option>
+            </select>
+            <input
+              type="text"
+              id="custom-ext"
+              class="hidden"
+              placeholder="vd: jpg, png, heic"
+            />
+          </div>
+          <div class="field">
+            <label class="field-label" for="conflict">Khi trùng tên</label>
+            <select id="conflict">
+              <option value="rename" selected>Đổi tên</option>
+              <option value="skip">Bỏ qua</option>
+              <option value="overwrite">Ghi đè</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="switch">
+          <input type="checkbox" id="recursive" checked />
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+          <span class="switch-label">Quét cả thư mục con</span>
+        </label>
+      </section>
+
+      <!-- ===== CỘT PHẢI: KẾT QUẢ + HÀNH ĐỘNG ===== -->
+      <aside class="card result">
+        <header class="card-head">
+          <span class="pill">KẾT QUẢ</span>
+          <h2>Ảnh tìm thấy</h2>
+        </header>
+
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-num" id="stat-requested">0</span>
+            <span class="stat-label">tên nhập</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num ok" id="stat-matched">0</span>
+            <span class="stat-label">tên khớp</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num" id="stat-copied">0</span>
+            <span class="stat-label" id="stat-copied-label">đã chép</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn ghost" id="scan" type="button">Quét khớp</button>
+          <button class="btn primary" id="copy" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>
+            Chép ảnh lọc
+          </button>
+        </div>
+
+        <div class="progress hidden" id="progress">
+          <div class="progress-bar" id="progress-bar"></div>
+          <span class="progress-text" id="progress-text"></span>
+        </div>
+
+        <div class="result-body" id="result-body">
+          <div class="placeholder" id="placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <p>Chưa quét thư mục.</p>
+            <span>Chọn nguồn, dán danh sách tên rồi bấm “Quét khớp”.</span>
+          </div>
+          <ul class="result-list" id="result-list"></ul>
+        </div>
+
+        <div class="result-foot">
+          <button class="btn small ghost hidden" id="export" type="button">
+            Xuất báo cáo
+          </button>
+          <button class="btn small ghost hidden" id="open-dest" type="button">
+            Mở thư mục đích
+          </button>
+        </div>
+      </aside>
+    </main>
+
+    <div class="toast hidden" id="toast"></div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
