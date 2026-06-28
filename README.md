@@ -1,6 +1,6 @@
 # MPhotoPicker
 
-App desktop **lọc & chép ảnh theo danh sách tên file**, chạy trên **macOS và Windows**. Bạn dán danh sách tên ảnh (đã chọn từ đâu đó), chọn thư mục nguồn + đích, app tìm các ảnh khớp tên rồi **chép** sang thư mục mới — giữ nguyên file gốc.
+App desktop **lọc & chép ảnh theo danh sách tên file**, chạy trên **macOS và Windows**. Bạn dán danh sách tên ảnh (đã chọn từ đâu đó hoặc trang chọn ảnh của mình là photo.maclife.vn), chọn thư mục nguồn + đích, app tìm các ảnh khớp tên rồi **chép** sang thư mục mới — giữ nguyên file gốc.
 
 Xây bằng **Tauri 2** (Rust backend + UI web), không phụ thuộc trình duyệt như bản web cũ (vốn chỉ chạy được trên Chrome/Edge).
 
